@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="dados.js"></script>
 <style>
 :root {
@@ -1238,7 +1239,7 @@ function agruparDados() {
 
   // Adicionar anos que têm premissas salvas no storage (ex.: 2027 ainda sem dados reais)
   try {
-    const _keys = Object.keys(localStorage);
+    const _keys = Object.keys(_premissasCache);
     _keys.forEach(k => {
       if (k && k.startsWith('forecast_')) {
         const ano = parseInt(k.split('_').pop());
@@ -1723,7 +1724,7 @@ function renderizarMatriz() {
   }
 
   // ── Determinar anos a exibir ──
-  const storageKeys = Object.keys(localStorage);
+  const storageKeys = Object.keys(_premissasCache);
   const anosComFc = new Set();
   storageKeys.forEach(k => {
     if (k && k.startsWith('forecast_')) {
@@ -2362,7 +2363,7 @@ function calcSaldosBarras(incluirP) {
     const anoData = dadosAgrupados[emp]?.[anoSelecionado];
     let fcData = {};
     if (incluirP) {
-      try { fcData = JSON.parse(localStorage.getItem(`forecast_${emp}_${anoSelecionado}`) || '{}'); } catch {}
+      try { fcData = JSON.parse(_premissasCache[`forecast_${emp}_${anoSelecionado}`] ?? '{}'); } catch {}
       // CONTA_TRANSFERENCIA: sempre recalcular dos metadados (nunca do forecast direto)
       const tm = computeTransfMeses(emp, anoSelecionado);
       if (Object.keys(tm).length) fcData[CONTA_TRANSFERENCIA] = tm;
@@ -3468,17 +3469,52 @@ function importarPremissas(event) {
   event.target.value = '';
 }
 
-// ─── STORAGE — localStorage com fallback em memória ──────────────────────────
-const _memStore = {};
+// ─── SUPABASE + STORAGE ──────────────────────────────────────────────────────
+const _SB_URL  = 'https://cjzmljsvgfemgucqftne.supabase.co';
+const _SB_KEY  = 'sb_publishable_TwnDr7nS5tVvIAjfozBX4A_IZyWL_e0';
+const _sbClient = window.supabase?.createClient(_SB_URL, _SB_KEY);
+
+const _premissasCache = {};
+
+async function carregarPremissasDoSupabase() {
+  if (!_sbClient) return;
+  try {
+    const { data, error } = await _sbClient.from('premissas').select('chave, dados');
+    if (error) throw error;
+    (data || []).forEach(row => {
+      _premissasCache[row.chave] = typeof row.dados === 'string' ? row.dados : JSON.stringify(row.dados);
+    });
+  } catch (err) {
+    console.warn('Supabase: erro ao carregar premissas:', err.message);
+  }
+}
 
 const storage = {
-  getItem(k)    { try { return localStorage.getItem(k); } catch { return _memStore[k] ?? null; } },
-  setItem(k, v) { try { localStorage.setItem(k, v); } catch { _memStore[k] = v; } },
-  removeItem(k) { try { localStorage.removeItem(k); } catch { delete _memStore[k]; } },
+  getItem(k) {
+    return _premissasCache[k] ?? null;
+  },
+  setItem(k, v) {
+    _premissasCache[k] = v;
+    if (_sbClient) {
+      let dados;
+      try { dados = JSON.parse(v); } catch { dados = v; }
+      _sbClient.from('premissas').upsert({ chave: k, dados })
+        .then(({ error }) => { if (error) console.warn('Supabase save error:', error.message); });
+    }
+  },
+  removeItem(k) {
+    delete _premissasCache[k];
+    if (_sbClient) {
+      _sbClient.from('premissas').delete().eq('chave', k)
+        .then(({ error }) => { if (error) console.warn('Supabase delete error:', error.message); });
+    }
+  },
 };
 
 // ─── INIT ────────────────────────────────────────────────────────────────────
-(function init() {
+(async function init() {
+  await carregarPremissasDoSupabase();
+
   const selAno = document.getElementById('selectAno');
   selAno.innerHTML = `<option value="${anoSelecionado}">${anoSelecionado}</option>`;
   const selFcAno = document.getElementById('fcAno');
