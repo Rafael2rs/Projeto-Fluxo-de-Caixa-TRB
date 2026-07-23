@@ -21,7 +21,7 @@ if errorlevel 1 (
 
 echo.
 echo Abrindo dashboard no navegador...
-start "" "%CD%\Fluxo de caixa.html"
+start "" "%CD%\index.html"
 
 echo.
 echo Pronto!
