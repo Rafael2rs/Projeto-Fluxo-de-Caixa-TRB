@@ -1,0 +1,12 @@
+# Dados gerados automaticamente pelo ps1 (regenerar com Atualizar Dados.bat)
+dados.js
+
+# Premissas locais (dados do usuário, não versionados)
+premissas_dfc.json
+
+# Excel de dados (fonte, não código)
+*.xlsx
+
+# Windows
+Thumbs.db
+desktop.ini
