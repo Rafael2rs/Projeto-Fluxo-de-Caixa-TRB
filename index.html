@@ -1040,22 +1040,16 @@ const ESTRUTURA_DFC = [
   { tipo: 'conta',    nome: 'Vila Terra Brasilis',                  grupo: 'Operacional' },
   { tipo: 'conta',    nome: 'Restaurante',                          grupo: 'Operacional' },
   { tipo: 'conta',    nome: 'Placemaking e Associações',            grupo: 'Operacional' },
-  { tipo: 'subtotal', nome: 'SUBTOTAL OPERACIONAL',                 grupo: 'Operacional' },
-
   { tipo: 'grupo',    nome: 'INVESTIMENTO',                         grupo: 'Investimento' },
   { tipo: 'conta',    nome: 'Investimentos',                        grupo: 'Investimento' },
   { tipo: 'conta',    nome: 'Aplicação financeira',                 grupo: 'Investimento' },
   { tipo: 'conta',    nome: 'Novos Negócios',                       grupo: 'Investimento' },
   { tipo: 'conta',    nome: 'Financiamento',                        grupo: 'Investimento' },
-  { tipo: 'subtotal', nome: 'SUBTOTAL INVESTIMENTO',                grupo: 'Investimento' },
-
   { tipo: 'grupo',    nome: 'FINANCIAMENTO',                        grupo: 'Financiamento' },
   { tipo: 'conta',    nome: 'Recursos em sociedade',                grupo: 'Financiamento' },
   { tipo: 'conta',    nome: 'Participação nos lucros',              grupo: 'Financiamento' },
   { tipo: 'conta',    nome: 'Distribuição de lucros',               grupo: 'Financiamento' },
   { tipo: 'conta',    nome: 'Despesa bancária',                     grupo: 'Financiamento' },
-  { tipo: 'subtotal', nome: 'SUBTOTAL FINANCIAMENTO',               grupo: 'Financiamento' },
-
   { tipo: 'geracao',  nome: 'GERAÇÃO DE CAIXA DO PERÍODO' },
   { tipo: 'saldo',    nome: 'SALDO ACUMULADO' },
 ];
@@ -1889,17 +1883,26 @@ function renderizarMatriz() {
     if (row.tipo === 'grupo') {
       if (!gruposComDados.has(row.grupo)) return;
       const collapsed = collapsedGrupos.has(row.grupo);
-      let emptyAnoCells = '';
+      let grupoCells = '';
       anosExibir.forEach((ano, idx) => {
-        for (let i = 0; i < 12; i++) {
-          const sep = (i === 0 && idx > 0) ? ' td-ano-sep' : '';
-          emptyAnoCells += `<td class="td-valor${sep}"></td>`;
+        const sp = dadosPorAno[ano].subtotaisPorMes[row.grupo] || {};
+        const sr = dadosPorAno[ano].subtotaisPR[row.grupo] || {};
+        let stTotal = 0, stHas = false;
+        for (let m = 1; m <= 12; m++) {
+          const v = sp[m];
+          if (v !== undefined && v !== null) { stTotal += v; stHas = true; }
         }
+        const fcVal = stHas ? stTotal : null;
+        grupoCells += renderCelulasAno(ano,
+          m => (sp[m] !== undefined && sp[m] !== null) ? sp[m] : null,
+          m => sr[m] || 'R',
+          fcVal, ' negativo', 'valor'
+        );
       });
       html += `<tr class="${trClass} grupo-expansivel" data-grupo-header="${row.grupo}" onclick="toggleGrupo('${row.grupo}')">
         <td class="td-nome"><span class="grupo-arrow">${collapsed ? '▶' : '▼'}</span> ${row.nome}</td>
         ${tdSIVazio}
-        ${emptyAnoCells}
+        ${grupoCells}
       </tr>`;
       return;
     }
