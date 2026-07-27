@@ -2826,7 +2826,12 @@ function getBaseCalcFcForEmp(mes, emp) {
 function renderizarFcMesesGrid() {
   const grid = document.getElementById('fcMesesGrid');
   const fc = getFcData();
-  const ultimoMesR = getUltimoMesRealizado(fcEmpresaSel, fcAnoSel);
+  const _mesRealizado = getUltimoMesRealizado(fcEmpresaSel, fcAnoSel);
+  const _hoje = new Date();
+  const _mesFallback = (fcAnoSel < _hoje.getFullYear()) ? 12
+                     : (fcAnoSel === _hoje.getFullYear()) ? _hoje.getMonth() // getMonth() é 0-based: julho=6 → trava meses 1-6
+                     : 0;
+  const ultimoMesR = _mesRealizado || _mesFallback;
   const isTransfConta = fcConta === CONTA_TRANSFERENCIA;
   const isTribNormal  = fcConta === 'Tributos' && fcModo === 'percentual' && !fcTributosRET;
 
