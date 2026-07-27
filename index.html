@@ -367,6 +367,10 @@ body {
 .tr-saldo .td-nome { background: #C6EFCE; }
 .tr-grupo .td-nome { background: var(--cor-grupo); }
 .tr-grupo.grupo-expansivel:hover td { filter: brightness(1.12); }
+.tr-grupo .td-valor                          { color: rgba(255,255,255,0.95); }
+.tr-grupo .td-valor.negativo                 { color: #FCA5A5; }
+.tr-grupo .td-valor.projetado                { color: #93C5FD; }
+.tr-grupo .td-valor.projetado.negativo       { color: #FCA5A5; }
 .grupo-arrow { display: inline-block; font-size: 9px; margin-right: 6px; opacity: 0.85; transition: transform 0.15s; }
 .td-valor { text-align: right; font-variant-numeric: tabular-nums; font-size: 12px; color: #374151; }
 .td-valor.negativo { color: var(--cor-negativo); }
