@@ -186,6 +186,7 @@ try {
     }
 
     $linhas = [System.Collections.Generic.List[string]]::new()
+    $ultimoMesRealizado = 0
 
     for ($r = 2; $r -le $nRows; $r++) {
 
@@ -250,6 +251,8 @@ try {
 
         # Ignorar Permutantes
         if ($permutantesEmp2Set.Contains($empFinal)) { continue }
+
+        if ($pr -eq "R" -and $mes -gt $ultimoMesRealizado) { $ultimoMesRealizado = $mes }
 
         $valorStr = $valor.ToString("F2", [System.Globalization.CultureInfo]::InvariantCulture)
         $linha = "{`"Empresa`":`"$(Esc $empFinal)`",`"Mes`":$mes,`"Valor`":$valorStr,`"Class Interna`":`"$(Esc $ci)`",`"Tipo`":`"$(Esc $tipo)`",`"PR`":`"$pr`",`"Data`":`"$dataStr`",`"CN`":`"$(Esc $cnJ)`"}"
@@ -471,7 +474,7 @@ try {
     }
     $regimeJson = "{" + ($regimeEntries -join ",") + "}"
 
-    $jsContent = "var DADOS_DFC_GERADO = '$ts';`r`nvar DADOS_DFC = [`r`n  $corpo`r`n];`r`nvar SALDO_INICIAL_CAIXA = $siJson;`r`nvar EMPRESAS_TIPO = $tipoJson;`r`nvar EMPRESAS_GRUPO = $grupoJson;`r`nvar EMPRESAS_REGIME = $regimeJson;"
+    $jsContent = "var DADOS_DFC_GERADO = '$ts';`r`nvar ULTIMO_MES_REALIZADO = $ultimoMesRealizado;`r`nvar DADOS_DFC = [`r`n  $corpo`r`n];`r`nvar SALDO_INICIAL_CAIXA = $siJson;`r`nvar EMPRESAS_TIPO = $tipoJson;`r`nvar EMPRESAS_GRUPO = $grupoJson;`r`nvar EMPRESAS_REGIME = $regimeJson;"
 
     # Gravar sem BOM (UTF-8 puro) — BOM em arquivos .js pode impedir carregamento no browser
     $utf8NoBom = [System.Text.UTF8Encoding]::new($false)

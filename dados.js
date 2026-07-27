@@ -1,4 +1,5 @@
-var DADOS_DFC_GERADO = '27/07/2026 11:24';
+var DADOS_DFC_GERADO = '27/07/2026 17:07';
+var ULTIMO_MES_REALIZADO = 7;
 var DADOS_DFC = [
   {"Empresa":"JDA","Mes":1,"Valor":-1345.24,"Class Interna":"Obras","Tipo":"Operacional","PR":"R","Data":"2026-01-02","CN":"Jardins das Águas Obra (orçamento Linkado)"},
   {"Empresa":"JDA","Mes":1,"Valor":101347.01,"Class Interna":"Aplicação financeira","Tipo":"Investimento","PR":"R","Data":"2026-01-02","CN":"Despesas Administrativas"},
