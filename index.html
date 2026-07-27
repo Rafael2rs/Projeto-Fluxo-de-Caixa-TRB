@@ -835,23 +835,6 @@ body {
       </div>
     </div>
 
-    <div class="filtro-sep"></div>
-
-    <!-- Multi-select: Projetos -->
-    <div class="ms-wrap" id="msObraWrap">
-      <div class="ms-btn" id="msObraBtn" onclick="toggleMsPanel('obra', event)">
-        Projetos <span class="ms-badge" id="msObraBadge" style="display:none"></span>
-        <span class="ms-caret">▼</span>
-      </div>
-      <div class="ms-panel" id="msObraPanel">
-        <label class="ms-item ms-todos">
-          <input type="checkbox" id="msObraAll" onchange="toggleMsTodos('obra')"> Selecionar todos
-        </label>
-        <div id="msObraItens"></div>
-        <button class="ms-limpar" onclick="limparMs('obra')">Limpar seleção</button>
-      </div>
-    </div>
-
     <select class="filtro-select" id="selectAno" onchange="setAno(this.value)" style="display:none">
     </select>
   </div>
@@ -1270,7 +1253,7 @@ const msSelObra  = new Set(); // selecionados no painel "Projetos"
 
 function getEmpresasFiltradas() {
   if (!empresasNaBase.length) return [];
-  const union = new Set([...msSelTodos, ...msSelObra]);
+  const union = new Set([...msSelTodos]);
   // nada selecionado = consolidado (todos)
   return union.size ? empresasNaBase.filter(e => union.has(e)) : empresasNaBase;
 }
@@ -1498,7 +1481,6 @@ function atualizarUI() {
 function popularSelectsEmpresa() {
   // Popula os dois painéis multi-select
   popularMsItens('todos');
-  popularMsItens('obra');
   // Popula o multi-select de empresa no painel de premissas (Face 2)
   popularEmpresaCheckboxes();
 }
