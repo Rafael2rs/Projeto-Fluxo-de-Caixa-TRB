@@ -3194,7 +3194,9 @@ function renderizarPremissasLista() {
 
   empParaVarrer.forEach(emp => {
     const fc = JSON.parse(storage.getItem(`forecast_${emp}_${fcAnoSel}`) || '{}');
-    const contas = Object.keys(fc).filter(c => Object.values(fc[c]).some(v => v !== '' && v !== null));
+    const contas = Object.keys(fc).filter(c =>
+      Object.values(fc[c]).some(v => v !== '' && v !== null && v !== undefined && Number(v) !== 0)
+    );
     if (!contas.length) return;
     blocos.push({ emp, fc, contas });
   });
