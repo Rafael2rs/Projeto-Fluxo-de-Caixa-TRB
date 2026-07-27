@@ -1475,6 +1475,7 @@ function renderizar() {
   renderizarKPIs();
   renderizarGrafico();
   renderizarGrafico2();
+  renderizarPremissasLista();
 }
 
 function atualizarUI() {
@@ -3187,8 +3188,8 @@ function removerTransferencia(id) {
 function renderizarPremissasLista() {
   const container = document.getElementById('premissasItens');
 
-  // Varrer todas as empresas conhecidas (ou todas as chaves do storage)
-  const empParaVarrer = empresasNaBase.length ? empresasNaBase : [];
+  // Varrer apenas as empresas selecionadas no filtro
+  const empParaVarrer = getEmpresasDoGrupo('Próprio');
   const blocos = [];
 
   empParaVarrer.forEach(emp => {
