@@ -1282,8 +1282,8 @@ function toggleMsPanel(qual, event) {
   const panel = document.getElementById(panelId);
   const isAberto = panel.classList.contains('aberto');
   // fechar ambos primeiro
-  document.getElementById(outroId).classList.remove('aberto');
-  document.getElementById(outroBtn).classList.remove('aberto');
+  document.getElementById(outroId)?.classList.remove('aberto');
+  document.getElementById(outroBtn)?.classList.remove('aberto');
   panel.classList.toggle('aberto', !isAberto);
   document.getElementById(btnId).classList.toggle('aberto', !isAberto);
 }
