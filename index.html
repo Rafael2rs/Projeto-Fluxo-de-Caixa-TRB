@@ -1289,8 +1289,8 @@ function toggleMsPanel(qual, event) {
 }
 
 function fecharMsPanels() {
-  ['msTodosPanel','msObraPanel'].forEach(id => document.getElementById(id).classList.remove('aberto'));
-  ['msTodosBtn','msObraBtn'].forEach(id => document.getElementById(id).classList.remove('aberto'));
+  ['msTodosPanel','msObraPanel'].forEach(id => document.getElementById(id)?.classList.remove('aberto'));
+  ['msTodosBtn','msObraBtn'].forEach(id => document.getElementById(id)?.classList.remove('aberto'));
 }
 
 function toggleMsCheck(qual, empresa, checked) {
