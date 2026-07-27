@@ -3188,8 +3188,8 @@ function removerTransferencia(id) {
 function renderizarPremissasLista() {
   const container = document.getElementById('premissasItens');
 
-  // Varrer apenas as empresas selecionadas no filtro
-  const empParaVarrer = getEmpresasDoGrupo('Próprio');
+  // Varrer apenas as empresas selecionadas no painel de premissas
+  const empParaVarrer = fcEmpresasSel.length ? fcEmpresasSel : [];
   const blocos = [];
 
   empParaVarrer.forEach(emp => {
