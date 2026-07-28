@@ -645,6 +645,13 @@ body {
 /* ── Tributos IRPJ/CSLL split ── */
 .trib-secao { margin-top: 16px; }
 .trib-secao:first-child { margin-top: 0; }
+.permuta-taxas { display: flex; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+.permuta-taxa-item { display: flex; flex-direction: column; gap: 4px; }
+.permuta-taxa-label { font-size: 10px; font-weight: 700; color: #6B7280; text-transform: uppercase; letter-spacing: 0.6px; }
+.permuta-taxa-row { display: flex; align-items: center; gap: 6px; }
+.permuta-taxa-input { width: 70px; padding: 5px 8px; border: 1.5px solid #E0E3E7; border-radius: 8px; font-size: 12px; font-family: inherit; text-align: right; }
+.permuta-taxa-input:focus { outline: none; border-color: var(--cor-botao); }
+.permuta-taxa-pct { font-size: 12px; color: #6B7280; }
 .trib-secao-titulo {
   font-size: 10px;
   font-weight: 700;
@@ -2720,7 +2727,7 @@ function getValorContaEmpresa(contaNome, mes, emp, ano) {
     const fc = JSON.parse(storage.getItem(`forecast_${emp}_${ano}`) || '{}');
     const fcVal = fc[contaNome]?.[mes];
     if (fcVal !== undefined && fcVal !== null && fcVal !== '' &&
-        !(typeof fcVal === 'string' && (fcVal.startsWith('pct:') || fcVal.startsWith('pct_ret:'))))
+        !(typeof fcVal === 'string' && (fcVal.startsWith('pct:') || fcVal.startsWith('pct_ret:') || fcVal.startsWith('pct_permuta:'))))
       return parseFloat(fcVal) || 0;
   } catch {}
 
@@ -2728,6 +2735,44 @@ function getValorContaEmpresa(contaNome, mes, emp, ano) {
   if (cel) return cel.valor;
 
   return 0;
+}
+
+// Base de cálculo para Permuta financeira em % Receita:
+// receita(M-1) - Tx.Gestão% - Tx.Comercialização% + distrato(M) + tributos(M)
+function getBaseCalcPermuta(mes, emp, ano) {
+  emp = emp || fcEmpresaSel;
+  ano = ano || fcAnoSel;
+  if (!emp || !ano) return null;
+
+  let mesBase = mes - 1, anoBase = String(ano);
+  if (mesBase < 1) { mesBase = 12; anoBase = String(Number(ano) - 1); }
+  const receita = getValorContaEmpresa('Venda de imóveis', mesBase, emp, anoBase);
+  if (!receita) return 0;
+
+  // Lê taxas: do input na tela (se visível) ou do storage
+  let pctGestao = 0, pctCom = 0;
+  const inpG = document.getElementById('permutaGestao');
+  const inpC = document.getElementById('permutaCom');
+  if (inpG) pctGestao = parseFloat(String(inpG.value).replace(',','.')) || 0;
+  if (inpC) pctCom    = parseFloat(String(inpC.value).replace(',','.')) || 0;
+  if (!inpG || !inpC) {
+    try {
+      const fc = JSON.parse(storage.getItem(`forecast_${emp}_${ano}`) || '{}');
+      if (!inpG) pctGestao = parseFloat(fc['_permuta_gestao']) || 0;
+      if (!inpC) pctCom    = parseFloat(fc['_permuta_com'])    || 0;
+    } catch {}
+  }
+
+  const distrato = getValorContaEmpresa('Distrato', mes, emp, String(ano));
+  const tributos = getValorContaEmpresa('Tributos',  mes, emp, String(ano));
+
+  const base = receita
+    - (pctGestao / 100 * receita)
+    - (pctCom    / 100 * receita)
+    + distrato
+    + tributos;
+
+  return Math.max(0, base);
 }
 
 // Resolve um valor bruto do forecast: se for "pct:X" ou "pct_ret:X", recalcula o BRL dinamicamente.
@@ -2743,6 +2788,12 @@ function resolveRawFc(raw, contaNome, emp, ano, mes) {
     const vendas  = getValorContaEmpresa('Venda de imóveis', mesBase, emp, anoBase);
     const distrato = getValorContaEmpresa('Distrato',        mesBase, emp, anoBase);
     return (vendas + distrato) * pct / 100;
+  }
+
+  if (typeof raw === 'string' && raw.startsWith('pct_permuta:')) {
+    const pct = parseFloat(raw.slice(12)) || 0;
+    const base = getBaseCalcPermuta(mes, emp, String(ano));
+    return (base || 0) * pct / 100;
   }
 
   if (typeof raw === 'string' && raw.startsWith('pct:')) {
@@ -2852,9 +2903,11 @@ function renderizarFcMesesGrid() {
       fcVal = transfrEnviosPorMes[m] !== undefined ? transfrEnviosPorMes[m] : undefined;
     } else {
       const raw = fc[fcConta]?.[m];
-      if (typeof raw === 'string' && (raw.startsWith('pct:') || raw.startsWith('pct_ret:'))) {
-        const isRet = raw.startsWith('pct_ret:');
-        const pct = parseFloat(raw.slice(isRet ? 8 : 4)) || 0;
+      if (typeof raw === 'string' && (raw.startsWith('pct:') || raw.startsWith('pct_ret:') || raw.startsWith('pct_permuta:'))) {
+        const isRet     = raw.startsWith('pct_ret:');
+        const isPermuta = raw.startsWith('pct_permuta:');
+        const offset    = isRet ? 8 : isPermuta ? 12 : 4;
+        const pct = parseFloat(raw.slice(offset)) || 0;
         fcVal = fcModo === 'percentual' ? Math.abs(pct) : resolveRawFc(raw, fcConta, fcEmpresaSel, fcAnoSel, m);
       } else {
         fcVal = raw;
@@ -2871,7 +2924,8 @@ function renderizarFcMesesGrid() {
 
     let preview = '';
     if (fcModo === 'percentual' && !isDisabled) {
-      const base = getBaseCalcFc(m);
+      const isPermutaConta = fcConta === 'Permuta financeira';
+      const base = isPermutaConta ? getBaseCalcPermuta(m) : getBaseCalcFc(m);
       if (base === null) preview = '<span style="color:#999">sem receita</span>';
       else if (fcVal) {
         const pct = parseFloat(String(fcVal).replace(',','.')) || 0;
@@ -2936,6 +2990,8 @@ function renderizarFcMesesGrid() {
     </div>`;
   }
 
+  const isPermuta = fcConta === 'Permuta financeira' && fcModo === 'percentual';
+
   if (isTribNormal) {
     grid.style.display = 'block';
     grid.innerHTML =
@@ -2947,6 +3003,32 @@ function renderizarFcMesesGrid() {
         <div class="trib-secao-titulo">IRPJ/CSLL — trimestral <span style="font-size:9px;font-weight:400;color:#9CA3AF">(jan · abr · jul · out)</span></div>
         <div class="meses-grid">${Array.from({length:12},(_,i)=>renderMesIRPJ(i+1)).join('')}</div>
       </div>`;
+  } else if (isPermuta) {
+    const pctGestaoSalvo = parseFloat(fc['_permuta_gestao']) || '';
+    const pctComSalvo    = parseFloat(fc['_permuta_com'])    || '';
+    grid.style.display = 'block';
+    grid.innerHTML =
+      `<div class="permuta-taxas">
+        <div class="permuta-taxa-item">
+          <div class="permuta-taxa-label">Tx. Gestão de carteira</div>
+          <div class="permuta-taxa-row">
+            <input type="text" class="permuta-taxa-input" id="permutaGestao"
+              value="${pctGestaoSalvo}" placeholder="0"
+              oninput="atualizarPreviewsPermuta()">
+            <span class="permuta-taxa-pct">%</span>
+          </div>
+        </div>
+        <div class="permuta-taxa-item">
+          <div class="permuta-taxa-label">Tx. Comercialização</div>
+          <div class="permuta-taxa-row">
+            <input type="text" class="permuta-taxa-input" id="permutaCom"
+              value="${pctComSalvo}" placeholder="0"
+              oninput="atualizarPreviewsPermuta()">
+            <span class="permuta-taxa-pct">%</span>
+          </div>
+        </div>
+      </div>
+      <div class="meses-grid">${Array.from({length:12},(_,i)=>renderMesPisCofins(i+1)).join('')}</div>`;
   } else {
     grid.style.display = '';
     grid.innerHTML = Array.from({length:12},(_,i)=>renderMesPisCofins(i+1)).join('');
@@ -2960,12 +3042,22 @@ function formatarInputBRL(input) {
 }
 
 function atualizarPreviewPercent(input, mes) {
-  const pct = parseFloat(String(input.value).replace(',','.')) || 0;
-  const base = getBaseCalcFc(mes);
+  const pct  = parseFloat(String(input.value).replace(',','.')) || 0;
+  const base = fcConta === 'Permuta financeira' ? getBaseCalcPermuta(mes) : getBaseCalcFc(mes);
   const prev = document.getElementById(`fcPreview${mes}`);
   if (base === null) { prev.innerHTML = '<span style="color:#999">sem receita</span>'; return; }
-  const val = base * pct / 100;
-  prev.innerHTML = fmtBRL(val);
+  prev.innerHTML = fmtBRL(base * pct / 100);
+}
+
+function atualizarPreviewsPermuta() {
+  for (let m = 1; m <= 12; m++) {
+    const inp  = document.getElementById(`fcMes${m}`);
+    const prev = document.getElementById(`fcPreview${m}`);
+    if (!inp || !prev || inp.disabled) continue;
+    const pct  = parseFloat(String(inp.value).replace(',','.')) || 0;
+    const base = getBaseCalcPermuta(m);
+    prev.innerHTML = pct ? fmtBRL(base * pct / 100) : '';
+  }
 }
 
 function atualizarPreviewIRPJ(input, mes) {
@@ -2982,9 +3074,10 @@ function salvarPremissa() {
   if (!fcConta) { showToast('Selecione a conta'); return; }
   if (fcConta === CONTA_TRANSFERENCIA) { salvarTransferencia(); return; }
 
-  // Tributos RET em modo percentual: armazenar o % bruto para recomputo dinâmico
-  const isPctDinamico = fcModo === 'percentual' && (fcConta === 'Tributos' && fcTributosRET);
-  const pctPrefix = (fcConta === 'Tributos' && fcTributosRET) ? 'pct_ret:' : 'pct:';
+  // Tributos RET e Permuta financeira: armazenar o % bruto para recomputo dinâmico
+  const isPermutaPct  = fcModo === 'percentual' && fcConta === 'Permuta financeira';
+  const isPctDinamico = fcModo === 'percentual' && ((fcConta === 'Tributos' && fcTributosRET) || isPermutaPct);
+  const pctPrefix     = isPermutaPct ? 'pct_permuta:' : ((fcConta === 'Tributos' && fcTributosRET) ? 'pct_ret:' : 'pct:');
 
   // Lê os valores digitados nos inputs uma vez
   const inputsPorMes = {};
@@ -3028,6 +3121,19 @@ function salvarPremissa() {
     Object.assign(fcEmp[fcConta], mesesValues);
     delete fcEmp[CONTA_TRANSFERENCIA];   // transferências sempre vêm dos metadados
     storage.setItem(`forecast_${emp}_${fcAnoSel}`, JSON.stringify(fcEmp));
+  }
+
+  // Permuta financeira: salvar taxas de dedução (_permuta_gestao, _permuta_com)
+  if (isPermutaPct) {
+    const pctG = parseFloat(String(document.getElementById('permutaGestao')?.value || '').replace(',','.')) || 0;
+    const pctC = parseFloat(String(document.getElementById('permutaCom')?.value    || '').replace(',','.')) || 0;
+    for (const emp of fcEmpresasSel) {
+      let fcEmp = {};
+      try { fcEmp = JSON.parse(storage.getItem(`forecast_${emp}_${fcAnoSel}`) || '{}'); } catch {}
+      fcEmp['_permuta_gestao'] = pctG;
+      fcEmp['_permuta_com']    = pctC;
+      storage.setItem(`forecast_${emp}_${fcAnoSel}`, JSON.stringify(fcEmp));
+    }
   }
 
   // IRPJ/CSLL: salvar separadamente em _TribIRPJ quando Tributos Normal %
@@ -3200,6 +3306,7 @@ function renderizarPremissasLista() {
   empParaVarrer.forEach(emp => {
     const fc = JSON.parse(storage.getItem(`forecast_${emp}_${fcAnoSel}`) || '{}');
     const contas = Object.keys(fc).filter(c =>
+      !c.startsWith('_') &&
       Object.values(fc[c]).some(v => v !== '' && v !== null && v !== undefined && Number(v) !== 0)
     );
     if (!contas.length) return;
