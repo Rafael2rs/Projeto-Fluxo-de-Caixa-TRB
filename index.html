@@ -12,23 +12,23 @@
 <script src="dados.js"></script>
 <style>
 :root {
-  --cor-header:          #1F4E39;
-  --cor-grupo:           #375623;
-  --cor-subtotal-bg:     #D9EAD3;
-  --cor-positivo:        #1A1A1A;
+  --cor-header:          #046B6E;
+  --cor-grupo:           #034F52;
+  --cor-subtotal-bg:     #C8E8E8;
+  --cor-positivo:        #0D2B2C;
   --cor-negativo:        #C0392B;
-  --cor-alerta-texto:    #FF0000;
+  --cor-alerta-texto:    #C0392B;
   --cor-alerta-fundo:    #FDECEA;
-  --cor-mes-atual-bg:    #EBF5EB;
-  --cor-mes-atual-borda: #27AE60;
+  --cor-mes-atual-bg:    #E6F5F5;
+  --cor-mes-atual-borda: #046B6E;
   --cor-projetado:       #2E75B6;
-  --cor-botao:           #27AE60;
-  --cor-fundo-pagina:    #EBEDF2;
+  --cor-botao:           #C8501E;
+  --cor-fundo-pagina:    #E6F5F5;
   /* tokens de design */
-  --shadow-card: 0 1px 3px rgba(0,0,0,0.04), 0 6px 24px rgba(0,0,0,0.07);
-  --shadow-nav:  0 2px 16px rgba(0,0,0,0.22);
+  --shadow-card: 0 1px 3px rgba(4,107,110,0.06), 0 6px 24px rgba(4,107,110,0.09);
+  --shadow-nav:  0 2px 16px rgba(3,79,82,0.28);
   --radius-card: 16px;
-  --border-light: #EAECF0;
+  --border-light: #C5E2E2;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -44,7 +44,7 @@ body {
 
 /* ── NAV ── */
 .nav-bar {
-  background: linear-gradient(150deg, #183a2b 0%, var(--cor-header) 100%);
+  background: linear-gradient(150deg, #034F52 0%, #046B6E 100%);
   color: #fff;
   display: flex;
   align-items: center;
@@ -130,7 +130,7 @@ body {
   user-select: none;
 }
 .ms-btn:hover { border-color: var(--cor-botao); }
-.ms-btn.tem-selecao { border-color: var(--cor-botao); color: var(--cor-header); background: #F0FDF4; }
+.ms-btn.tem-selecao { border-color: var(--cor-botao); color: var(--cor-header); background: #E6F5F5; }
 .ms-btn .ms-caret { font-size: 9px; margin-left: 2px; transition: transform 0.2s; color: #9CA3AF; }
 .ms-btn.aberto .ms-caret { transform: rotate(180deg); }
 .ms-badge {
@@ -291,8 +291,8 @@ body {
   padding-left: 13px;
 }
 .tr-conta td { background: #fff; }
-.tr-conta:nth-child(even) td { background: #FAFBFC; }
-.tr-conta:hover td { background: #F5F7FA; transition: background 0.1s; }
+.tr-conta:nth-child(even) td { background: #F2FAFA; }
+.tr-conta:hover td { background: #E6F5F5; transition: background 0.1s; }
 
 /* Conta expansível */
 .tr-conta.tem-cn .td-nome { cursor: pointer; }
@@ -309,29 +309,29 @@ body {
 
 /* Sub-linhas: cabeçalho de empresa */
 .tr-cn-emp td {
-  background: #EEF2EE !important;
+  background: #DDF0F0 !important;
   font-size: 11px;
   font-weight: 700;
-  color: #1F4E39;
+  color: #034F52;
   padding: 4px 10px 4px 22px !important;
   border-bottom: none;
 }
 
 /* Sub-linhas: empresa (visão consolidada) */
 .tr-emp-det td {
-  background: #EEF2EE !important;
+  background: #DDF0F0 !important;
   font-size: 11.5px;
-  border-bottom: 1px solid #DDE8DE !important;
+  border-bottom: 1px solid #B2D8D8 !important;
 }
 .tr-emp-det.tem-cn { cursor: pointer; }
 .tr-emp-det.tem-cn:hover td { filter: brightness(0.96); }
-.emp-arrow { display: inline-block; font-size: 8px; margin-right: 5px; transition: transform 0.15s; color: #375623; }
+.emp-arrow { display: inline-block; font-size: 8px; margin-right: 5px; transition: transform 0.15s; color: #046B6E; }
 .tr-emp-det.expandido .emp-arrow { transform: rotate(90deg); }
 .tr-emp-det .td-emp-label {
   padding-left: 22px !important;
   font-weight: 700;
-  color: #1F4E39;
-  background: #EEF2EE !important;
+  color: #034F52;
+  background: #DDF0F0 !important;
   position: sticky;
   left: 0;
   z-index: 1;
@@ -340,15 +340,15 @@ body {
 
 /* Sub-linhas: centro de negócio */
 .tr-cn td {
-  background: #F7FAF7 !important;
+  background: #EEF8F8 !important;
   font-size: 10.5px;
-  color: #4B5563;
-  border-bottom: 1px solid #E8EDF0 !important;
+  color: #3D6B6C;
+  border-bottom: 1px solid #D0E8E8 !important;
 }
 .tr-cn .td-cn-label {
   padding-left: 36px !important;
   font-style: italic;
-  background: #F7FAF7 !important;
+  background: #EEF8F8 !important;
   position: sticky;
   left: 0;
   z-index: 1;
@@ -359,18 +359,18 @@ body {
   background: var(--cor-subtotal-bg);
   font-weight: 600;
   font-size: 12px;
-  border-top: 1px solid #C8DFC8;
-  border-bottom: 1px solid #C8DFC8;
+  border-top: 1px solid #B2D8D8;
+  border-bottom: 1px solid #B2D8D8;
 }
-.tr-geracao td { background: #C6EFCE; font-weight: 700; font-size: 12px; border-top: 2px solid #5BAD75; }
-.tr-saldo td { background: #C6EFCE; font-weight: 700; font-size: 12.5px; }
+.tr-geracao td { background: #B2D8D8; font-weight: 700; font-size: 12px; border-top: 2px solid #046B6E; }
+.tr-saldo td { background: #B2D8D8; font-weight: 700; font-size: 12.5px; }
 .td-nome { text-align: left; position: sticky; left: 0; z-index: 2; min-width: var(--conta-w); width: var(--conta-w); max-width: var(--conta-w); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .tr-conta .td-nome { font-size: 12px; padding-left: 18px; background: #fff; color: #374151; }
-.tr-conta:nth-child(even) .td-nome { background: #FAFBFC; }
-.tr-conta:hover .td-nome { background: #F5F7FA; }
+.tr-conta:nth-child(even) .td-nome { background: #F2FAFA; }
+.tr-conta:hover .td-nome { background: #E6F5F5; }
 .tr-subtotal .td-nome { background: var(--cor-subtotal-bg); }
-.tr-geracao .td-nome { background: #C6EFCE; }
-.tr-saldo .td-nome { background: #C6EFCE; }
+.tr-geracao .td-nome { background: #B2D8D8; }
+.tr-saldo .td-nome { background: #B2D8D8; }
 .tr-grupo .td-nome { background: var(--cor-grupo); }
 .tr-grupo.grupo-expansivel:hover td { filter: brightness(1.12); }
 .tr-grupo .td-valor                          { color: rgba(255,255,255,0.95); }
@@ -385,9 +385,9 @@ body {
 
 
 /* Coluna de mês projetado */
-.th-mes.th-proj { background: #4a8c6a; }
-.th-forecast { border-left: 2px solid #3D7A5E !important; }
-.td-forecast { border-left: 2px solid #D4DCE0 !important; font-weight: 700 !important; }
+.th-mes.th-proj { background: #0A8B8F; }
+.th-forecast { border-left: 2px solid #046B6E !important; }
+.td-forecast { border-left: 2px solid #B2D8D8 !important; font-weight: 700 !important; }
 .td-valor.saldo-negativo { color: var(--cor-alerta-texto) !important; background: var(--cor-alerta-fundo) !important; font-weight: 700; }
 
 /* ── GRÁFICO ── */
@@ -418,7 +418,7 @@ body {
   overflow: hidden;
 }
 .sidebar-header {
-  background: linear-gradient(150deg, #183a2b 0%, var(--cor-header) 100%);
+  background: linear-gradient(150deg, #034F52 0%, #046B6E 100%);
   padding: 18px 22px 16px;
 }
 .sidebar-eyebrow {
@@ -464,7 +464,7 @@ body {
   outline: none;
   border-color: var(--cor-botao);
   background: #fff;
-  box-shadow: 0 0 0 3px rgba(39,174,96,0.1);
+  box-shadow: 0 0 0 3px rgba(200,80,30,0.12);
 }
 
 /* Multi-select empresa */
@@ -477,7 +477,7 @@ body {
 }
 .fc-multiselect-btn:hover, .fc-multiselect-btn.open {
   border-color: var(--cor-botao); background: #fff;
-  box-shadow: 0 0 0 3px rgba(39,174,96,0.1);
+  box-shadow: 0 0 0 3px rgba(200,80,30,0.12);
 }
 .fc-multiselect-btn .ms-caret { color: #9CA3AF; font-size: 10px; margin-left: 6px; }
 .fc-multiselect-drop {
@@ -508,21 +508,21 @@ body {
 .tr-conta .td-saldo-ini      { background: #fff; }
 .tr-conta:nth-child(even) .td-saldo-ini { background: #FAFBFC; }
 .tr-subtotal .td-saldo-ini   { background: var(--cor-subtotal-bg); }
-.tr-geracao  .td-saldo-ini   { background: #C6EFCE; }
-.tr-saldo    .td-saldo-ini   { background: #C6EFCE; }
+.tr-geracao  .td-saldo-ini   { background: #B2D8D8; }
+.tr-saldo    .td-saldo-ini   { background: #B2D8D8; }
 .tr-grupo    .td-saldo-ini   { background: var(--cor-grupo); }
-.tr-emp-det  .td-emp-label   { background: #EEF2EE !important; position: sticky; left: 0; z-index: 2; }
-.tr-cn       .td-cn-label    { background: #F7FAF7 !important; position: sticky; left: 0; z-index: 2; }
+.tr-emp-det  .td-emp-label   { background: #DDF0F0 !important; position: sticky; left: 0; z-index: 2; }
+.tr-cn       .td-cn-label    { background: #EEF8F8 !important; position: sticky; left: 0; z-index: 2; }
 /* separadores entre anos */
-.th-ano-sep  { border-left: 3px solid #4a8c6a !important; }
-.td-ano-sep  { border-left: 2px solid #C4D9CC !important; }
+.th-ano-sep  { border-left: 3px solid #B2D8D8 !important; }
+.td-ano-sep  { border-left: 2px solid #B2D8D8 !important; }
 /* cabeçalho de ano */
 .th-ano-group {
   background: var(--cor-header); color: #fff;
   font-size: 12px; font-weight: 700; text-align: center; letter-spacing: 0.5px;
   border-left: 3px solid rgba(255,255,255,0.25); padding: 5px 0;
 }
-.th-ano-group.th-ano-alt { background: #2E5D42; }
+.th-ano-group.th-ano-alt { background: #034F52; }
 .tr-header-anos th, .tr-header-meses th { white-space: nowrap; }
 .fc-ms-todas {
   width: 100%; text-align: left; padding: 8px 12px; border: none; background: none;
@@ -530,7 +530,7 @@ body {
   display: flex; align-items: center; gap: 7px; font-family: inherit;
   transition: background 0.1s;
 }
-.fc-ms-todas:hover { background: #F0FDF4; }
+.fc-ms-todas:hover { background: #E6F5F5; }
 .fc-ms-divider { height: 1px; background: #E5E7EB; margin: 2px 0; }
 
 /* Segmented controls (Grupo, Natureza, Modo) */
@@ -636,10 +636,10 @@ body {
   outline: none;
   border-color: var(--cor-botao);
   background: #fff;
-  box-shadow: 0 0 0 3px rgba(39,174,96,0.1);
+  box-shadow: 0 0 0 3px rgba(200,80,30,0.12);
 }
 .mes-input:disabled { background: #F4F4F4; color: #C9CDD4; cursor: not-allowed; border-color: #EBEBEB; }
-.mes-input.tem-dado { border-color: var(--cor-botao); background: #F0FDF4; color: var(--cor-header); }
+.mes-input.tem-dado { border-color: var(--cor-botao); background: #FEF0EA; color: #8A3210; }
 .mes-input-preview { font-size: 10px; color: var(--cor-projetado); text-align: center; min-height: 14px; }
 
 /* ── Tributos IRPJ/CSLL split ── */
@@ -686,7 +686,7 @@ body {
   transition: background 0.15s, box-shadow 0.15s;
   letter-spacing: 0.2px;
 }
-.btn-salvar:hover { background: #219a52; box-shadow: 0 4px 14px rgba(39,174,96,0.28); }
+.btn-salvar:hover { background: #A83E16; box-shadow: 0 4px 14px rgba(200,80,30,0.32); }
 
 /* Premissas list */
 .premissas-lista { margin-top: 0; }
@@ -745,7 +745,7 @@ body {
   cursor: pointer; transition: background 0.12s, border-color 0.12s;
 }
 .pi-edit-btn:hover { background: #EEF2FF; border-color: #6366F1; color: #4F46E5; }
-.badge-info { display: inline-block; padding: 2px 8px; border-radius: 99px; font-size: 10px; font-weight: 600; background: #ECFDF5; color: var(--cor-grupo); }
+.badge-info { display: inline-block; padding: 2px 8px; border-radius: 99px; font-size: 10px; font-weight: 600; background: #E6F5F5; color: var(--cor-header); }
 #popoverReplicarBtn:hover { background: #F9FAFB; }
 .fc-empty-state { text-align: center; padding: 64px 24px; color: #9CA3AF; }
 .fc-empty-state p { font-size: 13px; }
@@ -816,7 +816,7 @@ body {
 
 <!-- POPOVER REPLICAR -->
 <div id="popoverReplicar" style="display:none;position:fixed;z-index:300;background:#fff;border:1px solid #ddd;border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,0.15);padding:4px 0;min-width:210px;">
-  <div id="popoverReplicarBtn" style="padding:9px 16px;cursor:pointer;font-size:13px;color:#1F4E39;font-weight:600;display:flex;align-items:center;gap:8px;">
+  <div id="popoverReplicarBtn" style="padding:9px 16px;cursor:pointer;font-size:13px;color:#046B6E;font-weight:600;display:flex;align-items:center;gap:8px;">
     <span>↓</span><span>Replicar para os meses seguintes</span>
   </div>
 </div>
@@ -1068,7 +1068,7 @@ let grafico2Chart = null;
 let saldoInicialPorEmpresa = {};
 
 const PALETA_EMP = [
-  '#27AE60','#2E75B6','#E74C3C','#F39C12','#9B59B6',
+  '#046B6E','#C8501E','#2E75B6','#E74C3C','#9B59B6',
   '#1ABC9C','#D35400','#2980B9','#8E44AD','#16A085',
   '#C0392B','#7D3C98','#1A5276','#117A65','#784212',
   '#2471A3','#0E6655','#76448A','#1F618D','#B7950B',
@@ -2285,9 +2285,9 @@ function renderizarGrafico() {
         {
           label: 'Realizado',
           data: dadosR,
-          borderColor: '#27AE60',
+          borderColor: '#046B6E',
           borderWidth: 2.5,
-          pointBackgroundColor: '#27AE60',
+          pointBackgroundColor: '#046B6E',
           pointRadius: 4,
           tension: 0.4,
           fill: false,
